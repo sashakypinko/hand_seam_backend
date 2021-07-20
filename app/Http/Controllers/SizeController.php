@@ -2,22 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CategoryCollection;
 use App\Http\Resources\SizeCollection;
-use App\Services\Size\SizeServiceInterface;
+use App\Repositories\Size\SizeRepository;
 
 class SizeController extends Controller
 {
 
-    private $service;
+    /**
+     * @var SizeRepository
+     */
+    private $size;
 
-    public function __construct(SizeServiceInterface $service)
+    /**
+     * SizeController constructor.
+     * @param SizeRepository $size
+     */
+    public function __construct(SizeRepository $size)
     {
-        $this->service = $service;
+        $this->size = $size;
     }
 
+    /**
+     * @return SizeCollection
+     */
     public function getAll(): SizeCollection
     {
-        return new SizeCollection($this->service->all());
+        return new SizeCollection($this->size->all());
     }
 }

@@ -90,6 +90,9 @@ class Product extends Resource
 
             BelongsToMany::make(__('Sizes'), 'sizes', Size::class)
                 ->display('name'),
+
+            BelongsToMany::make(__('Related Products'), 'related_products', static::class)
+                ->display('name'),
         ];
     }
 }

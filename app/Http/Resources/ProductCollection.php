@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Product as Model;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;
 
@@ -17,16 +17,16 @@ class ProductCollection extends ResourceCollection
     /**
      * ProductCollection constructor.
      * @param $resource
-     * @param $total
+     * @param int $total
      */
-    public function __construct($resource, int $total)
+    public function __construct($resource, int $total = 0)
     {
         parent::__construct($resource);
         $this->total = $total;
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return array
      */
     public function toArray($request): array
@@ -38,7 +38,7 @@ class ProductCollection extends ResourceCollection
     }
 
     /**
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     private function mapCollection(): Collection
     {

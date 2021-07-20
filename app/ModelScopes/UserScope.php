@@ -2,6 +2,7 @@
 
 namespace App\ModelScopes;
 
+use App\Facades\Client;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -13,6 +14,6 @@ class UserScope implements Scope
     {
         $table = $model->getTable();
 
-        $builder->where("$table.visitor_id", auth()->id());
+        $builder->where("$table.client_id", Client::id());
     }
 }

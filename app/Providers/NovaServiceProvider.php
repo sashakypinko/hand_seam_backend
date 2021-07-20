@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Nova\Metrics\CategoryCounter;
+use App\Nova\Metrics\ClientCounter;
+use App\Nova\Metrics\DiscountCounter;
+use App\Nova\Metrics\ProductCounter;
+use App\Nova\Metrics\ProductsByCategory;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Cards\Help;
 use Laravel\Nova\Nova;
@@ -56,7 +61,12 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function cards()
     {
         return [
-            new Help,
+            new ProductCounter,
+            new CategoryCounter,
+            new DiscountCounter,
+            new ClientCounter,
+
+            new ProductsByCategory
         ];
     }
 

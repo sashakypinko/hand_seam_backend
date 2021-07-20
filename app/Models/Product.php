@@ -4,8 +4,13 @@ namespace App\Models;
 
 use App\Traits\FileTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @method static withCount(\Closure[] $array)
+ */
 class Product extends Model
 {
 
@@ -46,12 +51,17 @@ class Product extends Model
         'status'
     ];
 
+    /**
+     * @var string[]
+     */
     protected $appends = [
-        'image'
+        'image',
+        'primary_photo',
+        'secondary_photo'
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function product_photos(): HasMany
     {
@@ -59,49 +69,94 @@ class Product extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function type()
+    public function type(): BelongsTo
     {
         return $this->belongsTo(Type::class);
     }
 
-    public function sizes()
+    /**
+     * @return BelongsToMany
+     */
+    public function sizes(): BelongsToMany
     {
         return $this->belongsToMany(Size::class, 'product_sizes');
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsToMany
      */
-    public function color(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function related_products(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            self::class,
+            'product_relations',
+            'product_id',
+            'related_product_id'
+        );
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function statistics(): HasMany
+    {
+        return $this->hasMany(Statistic::class);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function color(): BelongsTo
     {
         return $this->belongsTo(Color::class);
     }
 
-    public function getPrimaryPhotoAttribute()
+    /**
+     * @return string
+     */
+    public function getPrimaryPhotoAttribute(): string
     {
-        return $this->product_photos->filter(function ($item) {
+        $photo = $this->product_photos->filter(function ($item) {
             return $item->type === ProductPhoto::TYPE_PRIMARY;
         })->first();
+
+        return self::getImagePath($photo->photo ?? '');
     }
 
-    public function getSecondaryPhotoAttribute()
+    /**
+     * @return string
+     */
+    public function getSecondaryPhotoAttribute(): string
     {
-        return $this->product_photos->filter(function ($item) {
+        $photo = $this->product_photos->filter(function ($item) {
             return $item->type === ProductPhoto::TYPE_SECONDARY;
         })->first();
+
+        return self::getImagePath($photo->photo ?? '');
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getPhotoAttribute()
+    {
+        return $this->product_photos[0]['photo'] ?? null;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getImageAttribute()
     {
         return $this->product_photos[0]['photo'] ?? null;
     }

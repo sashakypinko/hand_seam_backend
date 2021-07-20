@@ -2,10 +2,9 @@
 
 namespace App\Http\Middleware;
 
-
-use App\Models\Visitor;
+use App\Facades\Client;
+use App\Models\Client as Model;
 use Closure;
-use Illuminate\Support\Facades\Auth;
 
 class Authenticate
 {
@@ -17,16 +16,16 @@ class Authenticate
      */
     public function handle($request, Closure $next)
     {
-        if (!$request->user()) {
+        if (!Client::get()) {
             $userID = $request->get('userID');
-            $ip = $request->ip();
-            $user = $this->getUserByToken($userID);
+            $client = $this->getUserByToken($userID);
 
-            if (!$user) {
-                $user = $this->createUser($userID, $ip);
+            if (!$client) {
+                $ip = $request->ip();
+                $client = $this->createUser($userID, $ip);
             }
 
-            Auth::loginUsingId($user->id);
+            Client::auth($client);
         }
 
         return $next($request);
@@ -38,7 +37,7 @@ class Authenticate
      */
     private function getUserByToken(string $userID)
     {
-        return Visitor::where('token', $userID)->first();
+        return Model::where('token', $userID)->first();
     }
 
     /**
@@ -47,6 +46,6 @@ class Authenticate
      */
     private function createUser(string $userID, string $ip)
     {
-        return Visitor::create(['token' => $userID, 'ip' => $ip]);
+        return Model::create(['token' => $userID, 'ip' => $ip]);
     }
 }

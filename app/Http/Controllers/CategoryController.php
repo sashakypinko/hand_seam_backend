@@ -3,26 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CategoryCollection;
-use App\Http\Resources\ProductCollection;
-use App\Services\Category\CategoryServiceInterface;
-use Illuminate\Http\Request;
+use App\Repositories\Category\CategoryRepository;
 
 class CategoryController extends Controller
 {
 
     /**
-     * @var CategoryServiceInterface
+     * @var CategoryRepository
      */
-    private $service;
+    private $category;
 
 
     /**
      * CategoryController constructor.
-     * @param CategoryServiceInterface $service
+     * @param CategoryRepository $category
      */
-    public function __construct(CategoryServiceInterface $service)
+    public function __construct(CategoryRepository $category)
     {
-        $this->service = $service;
+        $this->category = $category;
     }
 
     /**
@@ -30,6 +28,6 @@ class CategoryController extends Controller
      */
     public function getAll(): CategoryCollection
     {
-        return new CategoryCollection($this->service->all());
+        return new CategoryCollection($this->category->all());
     }
 }

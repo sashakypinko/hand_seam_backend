@@ -2,66 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Category\CategoryServiceInterface;
-use App\Services\Color\ColorServiceInterface;
-use App\Services\Product\ProductServiceInterface;
-use App\Services\Size\SizeServiceInterface;
+use App\Facades\Statistic;
+use App\Repositories\Category\CategoryRepository;
+use App\Repositories\Color\ColorRepository;
+use App\Repositories\Product\ProductRepository;
+use App\Repositories\Size\SizeRepository;
 use Illuminate\Http\JsonResponse;
 
-class ProductFilterController
+class ProductFilterController extends Controller
 {
 
     /**
-     * @var CategoryServiceInterface
+     * @var CategoryRepository
      */
-    private $categoryService;
+    private $category;
 
     /**
-     * @var ColorServiceInterface
+     * @var ColorRepository
      */
-    private $colorService;
+    private $color;
 
     /**
-     * @var SizeServiceInterface
+     * @var SizeRepository
      */
-    private $sizeService;
+    private $size;
 
     /**
-     * @var ProductServiceInterface
+     * @var ProductRepository
      */
-    private $productService;
+    private $product;
 
     /**
      * ProductFilterController constructor.
-     * @param CategoryServiceInterface $categoryService
-     * @param ColorServiceInterface $colorService
-     * @param SizeServiceInterface $sizeService
-     * @param ProductServiceInterface $productService
+     *
+     * @param CategoryRepository $category
+     * @param ColorRepository $color
+     * @param SizeRepository $size
+     * @param ProductRepository $product
      */
     public function __construct(
-        CategoryServiceInterface $categoryService,
-        ColorServiceInterface $colorService,
-        SizeServiceInterface $sizeService,
-        ProductServiceInterface $productService
+        CategoryRepository $category,
+        ColorRepository $color,
+        SizeRepository $size,
+        ProductRepository $product
     )
     {
-        $this->categoryService = $categoryService;
-        $this->colorService = $colorService;
-        $this->sizeService = $sizeService;
-        $this->productService = $productService;
+        $this->category = $category;
+        $this->color = $color;
+        $this->size = $size;
+        $this->product = $product;
     }
 
     /**
      * @return JsonResponse
      */
-    public function getFilterFields(): JsonResponse
+    public function getFilterFields()
     {
+
         try {
             $filterFields = [
-                'categories' => $this->categoryService->all(),
-                'colors' => $this->colorService->all(),
-                'sizes' => $this->sizeService->all(),
-                'priceRange' => $this->productService->getPriceRange()
+                'categories' => $this->category->all(),
+                'colors' => $this->color->all(),
+                'sizes' => $this->size->all(),
+                'priceRange' => $this->product->getPriceRange()
             ];
 
             return new JsonResponse($filterFields, JsonResponse::HTTP_OK);
